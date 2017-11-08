@@ -31,6 +31,7 @@ extern ASM_PFX(SecCoreStartupWithStack)
 ; @param[in]  EBP   Pointer to the start of the Boot Firmware Volume
 ; @param[in]  DS    Selector allowing flat access to all addresses
 ; @param[in]  ES    Selector allowing flat access to all addresses
+;                   Set to LINEAR_SEL in TransitionFromReal16To32BitFlat
 ; @param[in]  FS    Selector allowing flat access to all addresses
 ; @param[in]  GS    Selector allowing flat access to all addresses
 ; @param[in]  SS    Selector allowing flat access to all addresses
@@ -61,6 +62,18 @@ ASM_PFX(_ModuleEntryPoint):
     mov     ebx, SEC_TOP_OF_STACK
     mov     esp, ebx
     nop
+
+    ;
+    ; Fill the temporary RAM with the initial stack value.
+    ; The loop below will seed the heap as well, but that's harmless.
+    ;
+    mov     eax, FixedPcdGet32 (PcdInitValueInTempStack)  ; dword to store
+    mov     edi, FixedPcdGet32 (PcdOvmfSecPeiTempRamBase) ; base address,
+                                                          ;   relative to ES
+    mov     ecx, FixedPcdGet32 (PcdOvmfSecPeiTempRamSize) ; byte count
+    shr     ecx, 2                                        ; dword count
+    cld                                                   ; store from base up
+    rep stosd
 
     ;
     ; Setup parameters and call SecCoreStartupWithStack
