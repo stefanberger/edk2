@@ -167,6 +167,10 @@ INF  OvmfPkg/SmmAccess/SmmAccessPei.inf
 INF  UefiCpuPkg/CpuMpPei/CpuMpPei.inf
 INF  MdeModulePkg/Universal/FaultTolerantWritePei/FaultTolerantWritePei.inf
 INF  MdeModulePkg/Universal/Variable/Pei/VariablePei.inf
+!if $(TPM2_ENABLE) == TRUE
+INF  SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigPei.inf
+INF  SecurityPkg/Tcg/Tcg2Pei/Tcg2Pei.inf
+!endif
 
 ################################################################################
 
