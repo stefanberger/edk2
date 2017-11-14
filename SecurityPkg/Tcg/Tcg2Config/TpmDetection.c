@@ -44,7 +44,7 @@ DetectTpmDevice (
   TCG2_DEVICE_DETECTION             Tcg2DeviceDetection;
   EFI_PEI_READ_ONLY_VARIABLE2_PPI   *VariablePpi;
   UINTN                             Size;
-
+  DEBUG ((DEBUG_INFO, "DetectTPM!\n"));
   Status = PeiServicesGetBootMode (&BootMode);
   ASSERT_EFI_ERROR (Status);
 

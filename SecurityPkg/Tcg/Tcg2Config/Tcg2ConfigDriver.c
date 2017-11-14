@@ -266,6 +266,8 @@ Tcg2ConfigDriverEntryPoint (
   EDKII_VARIABLE_LOCK_PROTOCOL  *VariableLockProtocol;
   UINT32                        CurrentActivePCRBanks;
 
+  DEBUG((DEBUG_INFO,  "TPM Tcg2Config\n"));
+  
   Status = gBS->OpenProtocol (
                   ImageHandle,
                   &gEfiCallerIdGuid,

@@ -80,9 +80,9 @@ Tcg2ConfigPeimEntryPoint (
   UINTN                           Index;
   UINT8                           TpmDevice;
 
+  DEBUG ((DEBUG_INFO, "TPM!\n"));
   Status = PeiServicesLocatePpi (&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID **) &VariablePpi);
   ASSERT_EFI_ERROR (Status);
-
   Size = sizeof(Tcg2Configuration);
   Status = VariablePpi->GetVariable (
                           VariablePpi,
