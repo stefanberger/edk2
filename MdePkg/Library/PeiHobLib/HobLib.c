@@ -86,8 +86,17 @@ GetNextHob (
   // Parse the HOB list until end of list or matching type is found.
   //
   while (!END_OF_HOB_LIST (Hob)) {
+      /* DEBUG ((DEBUG_INFO, "GetNextHob\n")); */
     if (Hob.Header->HobType == Type) {
+        /* DEBUG ((DEBUG_INFO, "GetNextHobRet\n")); */
       return Hob.Raw;
+    }
+    /* DEBUG ((DEBUG_INFO, "GetNextHob %u\n",  */
+    /*         GET_HOB_LENGTH (HobStart))); */
+    if (GET_HOB_LENGTH (HobStart) == 0) {
+        DEBUG ((DEBUG_INFO, "GetNextHobRet0 type: %u\n",
+                Hob.Header->HobType));
+        return NULL;
     }
     Hob.Raw = GET_NEXT_HOB (Hob);
   }
@@ -152,7 +161,9 @@ GetNextGuidHob (
 
   GuidHob.Raw = (UINT8 *) HobStart;
   while ((GuidHob.Raw = GetNextHob (EFI_HOB_TYPE_GUID_EXTENSION, GuidHob.Raw)) != NULL) {
+      /* DEBUG ((DEBUG_INFO, "GetNext\n")); */
     if (CompareGuid (Guid, &GuidHob.Guid->Name)) {
+        /* DEBUG ((DEBUG_INFO, "Ret\n")); */
       break;
     }
     GuidHob.Raw = GET_NEXT_HOB (GuidHob);

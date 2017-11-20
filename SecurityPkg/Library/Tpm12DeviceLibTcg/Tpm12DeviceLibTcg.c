@@ -91,6 +91,7 @@ Tpm12RequestUseTpm (
 {
   EFI_STATUS   Status;
 
+  DEBUG ((EFI_D_INFO, "Req Use %p:\n", mTcgProtocol));
   if (mTcgProtocol == NULL) {
     Status = gBS->LocateProtocol (&gEfiTcgProtocolGuid, NULL, (VOID **) &mTcgProtocol);
     if (EFI_ERROR (Status)) {

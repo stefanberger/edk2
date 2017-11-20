@@ -508,6 +508,7 @@ Tpm12PtpCrbRequestUseTpm (
 {
   EFI_STATUS                        Status;
 
+  DEBUG ((EFI_D_INFO, "DTPM Req Use CRB MMIO:\n"));
   MmioWrite32((UINTN)&CrbReg->LocalityControl, PTP_CRB_LOCALITY_CONTROL_REQUEST_ACCESS);
   Status = Tpm12PtpCrbWaitRegisterBits (
              &CrbReg->LocalityStatus,
@@ -537,12 +538,15 @@ Tpm12RequestUseTpm (
   // Special handle for TPM1.2 to check PTP too, because PTP/TIS share same register address.
   // Some other program might leverage this function to check the existence of TPM chip.
   //
+  DEBUG ((EFI_D_INFO, "DTPM Req Use:\n"));
   PtpInterface = Tpm12GetPtpInterface ((VOID *) (UINTN) PcdGet64 (PcdTpmBaseAddress));
   switch (PtpInterface) {
   case PtpInterfaceCrb:
+      DEBUG ((EFI_D_INFO, "DTPM Req Use CRB:\n"));
     return Tpm12PtpCrbRequestUseTpm ((PTP_CRB_REGISTERS_PTR) (UINTN) PcdGet64 (PcdTpmBaseAddress));
   case PtpInterfaceFifo:
   case PtpInterfaceTis:
+      DEBUG ((EFI_D_INFO, "DTPM Req Use TIS:\n"));
     return Tpm12TisPcRequestUseTpm ((TIS_PC_REGISTERS_PTR) (UINTN) PcdGet64 (PcdTpmBaseAddress));
   default:
     return EFI_NOT_FOUND;

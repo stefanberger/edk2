@@ -183,6 +183,7 @@ PtpCrbTpmCommand (
   );
   TpmOutSize = 0;
 
+    DEBUG ((EFI_D_VERBOSE, " Send 0\n "));
   //
   // STEP 0:
   // Ready is any time the TPM is ready to receive a command, following a write
@@ -196,6 +197,7 @@ PtpCrbTpmCommand (
              PTP_CRB_CONTROL_AREA_REQUEST_COMMAND_READY,
              PTP_TIMEOUT_C
              );
+    DEBUG ((EFI_D_VERBOSE, " Send 0.1\n "));
   if (EFI_ERROR (Status)) {
     Status = EFI_DEVICE_ERROR;
     goto Exit;
@@ -212,6 +214,7 @@ PtpCrbTpmCommand (
   }
 
   //
+    DEBUG ((EFI_D_VERBOSE, " Send 1\n "));
   // STEP 1:
   // Command Reception occurs following a Ready state between the write of the
   // first byte of a command to the Command Buffer and the receipt of a write
@@ -220,6 +223,7 @@ PtpCrbTpmCommand (
   for (Index = 0; Index < SizeIn; Index++) {
     MmioWrite8 ((UINTN)&CrbReg->CrbDataBuffer[Index], BufferIn[Index]);
   }
+    DEBUG ((EFI_D_VERBOSE, " Send 1.1\n "));
   MmioWrite32 ((UINTN)&CrbReg->CrbControlCommandAddressHigh, (UINT32)RShiftU64 ((UINTN)CrbReg->CrbDataBuffer, 32));
   MmioWrite32 ((UINTN)&CrbReg->CrbControlCommandAddressLow, (UINT32)(UINTN)CrbReg->CrbDataBuffer);
   MmioWrite32 ((UINTN)&CrbReg->CrbControlCommandSize, sizeof(CrbReg->CrbDataBuffer));

@@ -833,17 +833,20 @@ PeimEntryMA (
   TPM_PCRINDEX                      PcrIndex;
   BOOLEAN                           S3ErrorReport;
 
+  DEBUG ((DEBUG_INFO, "PeimEntryMA 1\n"));
   if (CompareGuid (PcdGetPtr(PcdTpmInstanceGuid), &gEfiTpmDeviceInstanceNoneGuid) ||
       CompareGuid (PcdGetPtr(PcdTpmInstanceGuid), &gEfiTpmDeviceInstanceTpm12Guid)){
     DEBUG ((DEBUG_INFO, "No TPM2 instance required!\n"));
     return EFI_UNSUPPORTED;
   }
 
+  DEBUG ((DEBUG_INFO, "PeimEntryMA 1.1\n"));
   if (GetFirstGuidHob (&gTpmErrorHobGuid) != NULL) {
     DEBUG ((EFI_D_ERROR, "TPM2 error!\n"));
     return EFI_DEVICE_ERROR;
   }
 
+  DEBUG ((DEBUG_INFO, "PeimEntryMA 1.2\n"));
   Status = PeiServicesGetBootMode (&BootMode);
   ASSERT_EFI_ERROR (Status);
 
@@ -851,6 +854,7 @@ PeimEntryMA (
   // In S3 path, skip shadow logic. no measurement is required
   //
   if (BootMode != BOOT_ON_S3_RESUME) {
+      DEBUG ((DEBUG_INFO, "PeimEntryMA 1.3\n"));
     Status = (**PeiServices).RegisterForShadow(FileHandle);
     if (Status == EFI_ALREADY_STARTED) {
       mImageInMemory = TRUE;
@@ -860,6 +864,7 @@ PeimEntryMA (
     }
   }
 
+  DEBUG ((DEBUG_INFO, "PeimEntryMA 1.4\n"));
   if (!mImageInMemory) {
     //
     // Initialize TPM device
@@ -870,9 +875,11 @@ PeimEntryMA (
       goto Done;
     }
 
+    DEBUG ((DEBUG_INFO, "PeimEntryMA 1.5\n"));
     S3ErrorReport = FALSE;
     if (PcdGet8 (PcdTpm2InitializationPolicy) == 1) {
       if (BootMode == BOOT_ON_S3_RESUME) {
+          DEBUG ((DEBUG_INFO, "PeimEntryMA 1.6\n"));
         Status = Tpm2Startup (TPM_SU_STATE);
         if (EFI_ERROR (Status) ) {
           Status = Tpm2Startup (TPM_SU_CLEAR);
@@ -881,6 +888,7 @@ PeimEntryMA (
           }
         }
       } else {
+          DEBUG ((DEBUG_INFO, "PeimEntryMA 1.7\n"));
         Status = Tpm2Startup (TPM_SU_CLEAR);
       }
       if (EFI_ERROR (Status) ) {
@@ -888,6 +896,7 @@ PeimEntryMA (
       }
     }
     
+    DEBUG ((DEBUG_INFO, "PeimEntryMA 2\n"));
     //
     // Update Tpm2HashMask according to PCR bank.
     //
@@ -934,6 +943,7 @@ PeimEntryMA (
   }
 
 Done:
+  DEBUG ((DEBUG_INFO, "PeimEntryMA 3\n"));
   if (EFI_ERROR (Status)) {
     DEBUG ((EFI_D_ERROR, "TPM2 error! Build Hob\n"));
     BuildGuidHob (&gTpmErrorHobGuid,0);

@@ -83,6 +83,7 @@ DetectTpmDevice (
 
   Status = Tpm12RequestUseTpm ();
   if (EFI_ERROR (Status)) {
+      DEBUG ((EFI_D_INFO, "DetectTpmDevice Err:\n"));
     //
     // dTPM not available
     //
