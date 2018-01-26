@@ -31,6 +31,8 @@
   PlatformData.c
   QemuKernel.c
   BdsPlatform.h
+  QemuTPMPPI.c
+  QemuTPMPPI.h
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -38,6 +40,7 @@
   IntelFrameworkModulePkg/IntelFrameworkModulePkg.dec
   SourceLevelDebugPkg/SourceLevelDebugPkg.dec
   OvmfPkg/OvmfPkg.dec
+  SecurityPkg/SecurityPkg.dec
 
 [LibraryClasses]
   BaseLib
@@ -56,6 +59,7 @@
   LoadLinuxLib
   QemuBootOrderLib
   UefiLib
+  Tcg2PhysicalPresenceLib
 
 [Pcd]
   gUefiOvmfPkgTokenSpaceGuid.PcdEmuVariableEvent

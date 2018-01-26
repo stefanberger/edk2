@@ -13,6 +13,7 @@
 **/
 
 #include "BdsPlatform.h"
+#include "QemuTPMPPI.h"
 #include <Guid/XenInfo.h>
 #include <Guid/RootBridgesConnectedEventGroup.h>
 #include <Protocol/FirmwareVolume2.h>
@@ -1457,6 +1458,13 @@ Routine Description:
   // Perform some platform specific connect sequence
   //
   PlatformBdsConnectSequence ();
+
+  struct tpm_ppi *tp = Tcg2PhysicalPresenceLibQEMUInitPPI();
+  if (tp) {
+    Tcg2PhysicalPresenceLibQEMUPre(tp);
+    Tcg2PhysicalPresenceLibProcessRequest(NULL);
+    Tcg2PhysicalPresenceLibQEMUPost(tp);
+  }
 
   //
   // Process QEMU's -kernel command line option

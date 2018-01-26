@@ -912,6 +912,7 @@ Tcg2PhysicalPresenceLibProcessRequest (
   // It should be protected from malicious software. We set it as read-only variable here.
   //
   Status = gBS->LocateProtocol (&gEdkiiVariableLockProtocolGuid, NULL, (VOID **)&VariableLockProtocol);
+#if 0
   if (!EFI_ERROR (Status)) {
     Status = VariableLockProtocol->RequestToLock (
                                      VariableLockProtocol,
@@ -923,6 +924,7 @@ Tcg2PhysicalPresenceLibProcessRequest (
       ASSERT_EFI_ERROR (Status);
     }
   }
+#endif
   
   //
   // Check S4 resume
@@ -1114,7 +1116,7 @@ Tcg2PhysicalPresenceLibReturnOperationResponseToOsFunction (
   if (EFI_ERROR (Status)) {
     *MostRecentRequest = 0;
     *Response          = 0;
-    DEBUG ((EFI_D_ERROR, "[TPM2] Get PP variable failure! Status = %r\n", Status));
+    DEBUG ((EFI_D_ERROR, "O. [TPM2] Get PP variable failure! Status = %r\n", Status));
     return TCG_PP_RETURN_TPM_OPERATION_RESPONSE_FAILURE;
   }
   
@@ -1163,7 +1165,7 @@ Tcg2PhysicalPresenceLibSubmitRequestToPreOSFunction (
                   &PpData
                   );
   if (EFI_ERROR (Status)) {
-    DEBUG ((EFI_D_ERROR, "[TPM2] Get PP variable failure! Status = %r\n", Status));
+    DEBUG ((EFI_D_ERROR, "P. [TPM2] Get PP variable failure! Status = %r\n", Status));
     return TCG_PP_SUBMIT_REQUEST_TO_PREOS_GENERAL_FAILURE;
   }
 
