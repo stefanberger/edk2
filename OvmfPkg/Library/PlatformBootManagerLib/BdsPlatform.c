@@ -366,6 +366,7 @@ Returns:
   //
   // Lock the TPM 2 Physical Presence interface variable before end-of-DXE
   //
+  TcgPhysicalPresenceLibSetupDXE();
   Tcg2PhysicalPresenceLibSetupDXE();
 
   //
@@ -1466,6 +1467,7 @@ Routine Description:
   //
   // Process TPM 2 Physical Presence request, if any
   //
+  TcgPhysicalPresenceLibProcessRequest();
   Tcg2PhysicalPresenceLibProcessRequest(NULL);
 
   //

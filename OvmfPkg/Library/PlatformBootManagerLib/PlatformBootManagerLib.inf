@@ -58,6 +58,7 @@
   QemuBootOrderLib
   UefiLib
   Tcg2PhysicalPresenceLib
+  TcgPhysicalPresenceLib
 
 [Pcd]
   gUefiOvmfPkgTokenSpaceGuid.PcdEmuVariableEvent

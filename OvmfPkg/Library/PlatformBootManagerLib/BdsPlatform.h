@@ -51,6 +51,7 @@ Abstract:
 #include <Library/QemuFwCfgS3Lib.h>
 #include <Library/QemuBootOrderLib.h>
 #include <Library/Tcg2PhysicalPresenceLib.h>
+#include <Library/TcgPhysicalPresenceLib.h>
 
 #include <Protocol/Decompress.h>
 #include <Protocol/PciIo.h>
