@@ -364,6 +364,11 @@ Returns:
   EfiEventGroupSignal (&gRootBridgesConnectedEventGroupGuid);
 
   //
+  // Lock the TPM 2 Physical Presence interface variable before end-of-DXE
+  //
+  Tcg2PhysicalPresenceLibSetupDXE();
+
+  //
   // We can't signal End-of-Dxe earlier than this. Namely, End-of-Dxe triggers
   // the preparation of S3 system information. That logic has a hard dependency
   // on the presence of the FACS ACPI table. Since our ACPI tables are only
@@ -1457,6 +1462,11 @@ Routine Description:
   // Perform some platform specific connect sequence
   //
   PlatformBdsConnectSequence ();
+
+  //
+  // Process TPM 2 Physical Presence request, if any
+  //
+  Tcg2PhysicalPresenceLibProcessRequest(NULL);
 
   //
   // Process QEMU's -kernel command line option
