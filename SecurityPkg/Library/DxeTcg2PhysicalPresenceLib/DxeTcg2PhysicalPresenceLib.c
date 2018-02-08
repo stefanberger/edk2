@@ -883,28 +883,19 @@ Tcg2ExecutePendingTpmRequest (
 }
 
 /**
-  Check and execute the pending TPM request.
-
-  The TPM request may come from OS or BIOS. This API will display request information and wait 
-  for user confirmation if TPM request exists. The TPM request will be sent to TPM device after
-  the TPM request is confirmed, and one or more reset may be required to make TPM request to 
-  take effect.
-  
-  This API should be invoked after console in and console out are all ready as they are required
-  to display request information and get user input to confirm the request.  
-
-  @param[in]  PlatformAuth                   platform auth value. NULL means no platform auth change.
-**/
+  Create the TCG2 Physical Presence and Physical Presence flags variables. Set the
+  Physical Presence flags variable to read-only so that drivers cannot change it.
+ **/
 VOID
 EFIAPI
-Tcg2PhysicalPresenceLibProcessRequest (
-  IN      TPM2B_AUTH                     *PlatformAuth  OPTIONAL
+Tcg2PhysicalPresenceLibSetupDXE (
+  VOID
   )
 {
   EFI_STATUS                        Status;
+  EDKII_VARIABLE_LOCK_PROTOCOL      *VariableLockProtocol;
   UINTN                             DataSize;
   EFI_TCG2_PHYSICAL_PRESENCE        TcgPpData;
-  EDKII_VARIABLE_LOCK_PROTOCOL      *VariableLockProtocol;
   EFI_TCG2_PHYSICAL_PRESENCE_FLAGS  PpiFlags;
 
   //
@@ -924,14 +915,6 @@ Tcg2PhysicalPresenceLibProcessRequest (
     }
   }
   
-  //
-  // Check S4 resume
-  //
-  if (GetBootModeHob () == BOOT_ON_S4_RESUME) {
-    DEBUG ((EFI_D_INFO, "S4 Resume, Skip TPM PP process!\n"));
-    return ;
-  }
-
   //
   // Initialize physical presence flags.
   //
@@ -984,6 +967,71 @@ Tcg2PhysicalPresenceLibProcessRequest (
       DEBUG ((EFI_D_ERROR, "[TPM2] Set physical presence variable failed, Status = %r\n", Status));
       return ;
     }
+  }
+}
+
+/**
+  Check and execute the pending TPM request.
+
+  The TPM request may come from OS or BIOS. This API will display request information and wait 
+  for user confirmation if TPM request exists. The TPM request will be sent to TPM device after
+  the TPM request is confirmed, and one or more reset may be required to make TPM request to 
+  take effect.
+  
+  This API should be invoked after console in and console out are all ready as they are required
+  to display request information and get user input to confirm the request.  
+
+  @param[in]  PlatformAuth                   platform auth value. NULL means no platform auth change.
+**/
+VOID
+EFIAPI
+Tcg2PhysicalPresenceLibProcessRequest (
+  IN      TPM2B_AUTH                     *PlatformAuth  OPTIONAL
+  )
+{
+  EFI_STATUS                        Status;
+  UINTN                             DataSize;
+  EFI_TCG2_PHYSICAL_PRESENCE        TcgPpData;
+  EFI_TCG2_PHYSICAL_PRESENCE_FLAGS  PpiFlags;
+
+  //
+  // Check S4 resume
+  //
+  if (GetBootModeHob () == BOOT_ON_S4_RESUME) {
+    DEBUG ((EFI_D_INFO, "S4 Resume, Skip TPM PP process!\n"));
+    return ;
+  }
+
+  //
+  // Read physical presence flags.
+  //
+  DataSize = sizeof (EFI_TCG2_PHYSICAL_PRESENCE_FLAGS);
+  Status = gRT->GetVariable (
+                  TCG2_PHYSICAL_PRESENCE_FLAGS_VARIABLE,
+                  &gEfiTcg2PhysicalPresenceGuid,
+                  NULL,
+                  &DataSize,
+                  &PpiFlags
+                  );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((EFI_D_ERROR, "[TPM2] Get physical presence flag failed, Status = %r\n", Status));
+    return ;
+  }
+  
+  //
+  // Read physical presence variable.
+  //
+  DataSize = sizeof (EFI_TCG2_PHYSICAL_PRESENCE);
+  Status = gRT->GetVariable (
+                  TCG2_PHYSICAL_PRESENCE_VARIABLE,
+                  &gEfiTcg2PhysicalPresenceGuid,
+                  NULL,
+                  &DataSize,
+                  &TcgPpData
+                  );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((EFI_D_ERROR, "[TPM2] Get physical presence variable failed, Status = %r\n", Status));
+    return ;
   }
 
   DEBUG ((EFI_D_INFO, "[TPM2] Flags=%x, PPRequest=%x (LastPPRequest=%x)\n", PpiFlags.PPFlags, TcgPpData.PPRequest, TcgPpData.LastPPRequest));

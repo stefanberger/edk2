@@ -60,6 +60,16 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
                                                    TCG2_BIOS_STORAGE_MANAGEMENT_FLAG_PP_REQUIRED_FOR_DISABLE_BLOCK_SID)
 
 /**
+  Create the TCG2 Physical Presence and Physical Presence flags variables. Set the
+  Physical Presence flags variable to read-only so that drivers cannot change it.
+**/
+VOID
+EFIAPI
+Tcg2PhysicalPresenceLibSetupDXE (
+  VOID
+  );
+
+/**
   Check and execute the pending TPM request.
 
   The TPM request may come from OS or BIOS. This API will display request information and wait 
