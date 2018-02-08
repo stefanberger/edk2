@@ -1146,27 +1146,16 @@ ExecutePendingTpmRequest (
 }
 
 /**
-  Check and execute the pending TPM request and Lock TPM.
-
-  The TPM request may come from OS or BIOS. This API will display request information and wait 
-  for user confirmation if TPM request exists. The TPM request will be sent to TPM device after
-  the TPM request is confirmed, and one or more reset may be required to make TPM request to 
-  take effect. At last, it will lock TPM to prevent TPM state change by malware.
-  
-  This API should be invoked after console in and console out are all ready as they are required
-  to display request information and get user input to confirm the request. This API should also 
-  be invoked as early as possible as TPM is locked in this function.
-  
-**/
+  Create the TCG Physical Presence and Physical Presence flags variables. Set the
+  Physical Presence flags variable to read-only so that drivers cannot change it.
+ **/
 VOID
 EFIAPI
-TcgPhysicalPresenceLibProcessRequest (
+TcgPhysicalPresenceLibSetupDXE (
   VOID
   )
 {
   EFI_STATUS                        Status;
-  BOOLEAN                           LifetimeLock;
-  BOOLEAN                           CmdEnable;
   UINTN                             DataSize;
   EFI_PHYSICAL_PRESENCE             TcgPpData;
   EFI_TCG_PROTOCOL                  *TcgProtocol;
@@ -1247,6 +1236,72 @@ TcgPhysicalPresenceLibProcessRequest (
       DEBUG ((EFI_D_ERROR, "[TPM] Set physical presence variable failed, Status = %r\n", Status));
       return;
     }
+  }
+
+}
+
+/**
+  Check and execute the pending TPM request and Lock TPM.
+
+  The TPM request may come from OS or BIOS. This API will display request information and wait 
+  for user confirmation if TPM request exists. The TPM request will be sent to TPM device after
+  the TPM request is confirmed, and one or more reset may be required to make TPM request to 
+  take effect. At last, it will lock TPM to prevent TPM state change by malware.
+  
+  This API should be invoked after console in and console out are all ready as they are required
+  to display request information and get user input to confirm the request. This API should also 
+  be invoked as early as possible as TPM is locked in this function.
+  
+**/
+VOID
+EFIAPI
+TcgPhysicalPresenceLibProcessRequest (
+  VOID
+  )
+{
+  EFI_STATUS                        Status;
+  BOOLEAN                           LifetimeLock;
+  BOOLEAN                           CmdEnable;
+  UINTN                             DataSize;
+  EFI_PHYSICAL_PRESENCE             TcgPpData;
+  EFI_TCG_PROTOCOL                  *TcgProtocol;
+  EFI_PHYSICAL_PRESENCE_FLAGS       PpiFlags;
+  
+  Status = gBS->LocateProtocol (&gEfiTcgProtocolGuid, NULL, (VOID **)&TcgProtocol);
+  if (EFI_ERROR (Status)) {
+    return ;
+  }
+
+  //
+  // Read physical presence flags.
+  //
+  DataSize = sizeof (EFI_PHYSICAL_PRESENCE_FLAGS);
+  Status = gRT->GetVariable (
+                  PHYSICAL_PRESENCE_FLAGS_VARIABLE,
+                  &gEfiPhysicalPresenceGuid,
+                  NULL,
+                  &DataSize,
+                  &PpiFlags
+                  );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((EFI_D_ERROR, "[TPM] Get physical presence flag failed, Status = %r\n", Status));
+    return ;
+  }
+
+  //
+  // Read physical presence variable.
+  //
+  DataSize = sizeof (EFI_PHYSICAL_PRESENCE);
+  Status = gRT->GetVariable (
+                  PHYSICAL_PRESENCE_VARIABLE,
+                  &gEfiPhysicalPresenceGuid,
+                  NULL,
+                  &DataSize,
+                  &TcgPpData
+                  );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((EFI_D_ERROR, "[TPM] Get physical presence variable failed, Status = %r\n", Status));
+    return;
   }
 
   DEBUG ((EFI_D_INFO, "[TPM] Flags=%x, PPRequest=%x\n", PpiFlags.PPFlags, TcgPpData.PPRequest));

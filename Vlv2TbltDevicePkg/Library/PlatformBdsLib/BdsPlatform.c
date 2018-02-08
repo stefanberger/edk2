@@ -1792,6 +1792,7 @@ PlatformBdsPolicyBehavior (
 
 
     #ifdef TPM_ENABLED
+    TcgPhysicalPresenceLibSetupDXE();
     TcgPhysicalPresenceLibProcessRequest();
     #endif
     #ifdef FTPM_ENABLE
@@ -2002,6 +2003,7 @@ FULL_CONFIGURATION:
       }
     }
    #ifdef TPM_ENABLED
+   TcgPhysicalPresenceLibSetupDXE();
    TcgPhysicalPresenceLibProcessRequest();
    #endif
    #ifdef FTPM_ENABLE

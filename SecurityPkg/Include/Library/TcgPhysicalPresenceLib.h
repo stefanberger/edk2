@@ -17,6 +17,16 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define _TCG_PHYSICAL_PRESENCE_LIB_H_
 
 /**
+  Create the TCG Physical Presence and Physical Presence flags variables. Set the
+  Physical Presence flags variable to read-only so that drivers cannot change it.
+**/
+VOID
+EFIAPI
+TcgPhysicalPresenceLibSetupDXE (
+  VOID
+  );
+
+/**
   Check and execute the pending TPM request and Lock TPM.
 
   The TPM request may come from OS or BIOS. This API will display request information and wait 
