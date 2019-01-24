@@ -296,6 +296,10 @@ INF  ShellPkg/Application/Shell/Shell.inf
 
 INF MdeModulePkg/Logo/LogoDxe.inf
 
+!if ($(TPM2_ENABLE) == TRUE) && ($(TPM2_CONFIG_ENABLE) == TRUE)
+INF  SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+!endif
+
 #
 # Network modules
 #
